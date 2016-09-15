@@ -31,8 +31,11 @@ public class MyServlet extends HttpServlet {
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException {
+		super.init();
 		this.config = config;
 		context = config.getServletContext();
+		String authorName = config.getInitParameter("author");
+		System.out.println("author: "+authorName);
 
 	}
 
@@ -42,11 +45,12 @@ public class MyServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		int counter = 1;
 		// counter = hitCounter(response);	
 		counter = sessionHitCounter(request);
 		 
-			// we get the writer
+		// we get the writer		
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		out.println("Number of times the get method has been called:" + counter);
