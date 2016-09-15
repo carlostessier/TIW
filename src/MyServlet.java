@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class MyServlet
@@ -41,24 +42,48 @@ public class MyServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		int counter = 1;
+		// counter = hitCounter(response);	
+		counter = sessionHitCounter(request);
+		 
+			// we get the writer
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
+		out.println("Number of times the get method has been called:" + counter);
+		out.flush();
+		out.close();
 
-		hitCounter(response);
 	}
 
-	private void hitCounter(HttpServletResponse response) throws IOException {
-		int counter = 1;
+	private int sessionHitCounter(HttpServletRequest request) {
+		HttpSession mySession = request.getSession(true);
+		if (mySession.getAttribute("counter") == null) {
+			System.out.println("Set to 0");
+		} else {
+			System.out.println((String) mySession.getAttribute("counter"));
+		}
+		int scount = 0;
+		try{
+		 scount = Integer.parseInt((String) (mySession.getAttribute("counter")));
+		} catch (NumberFormatException e){
+			
+		}
+		scount++;
+		mySession.setAttribute("counter", String.valueOf(scount));
+		return scount;
+	}
+
+	private int hitCounter(HttpServletResponse response) throws IOException {
+		int counter = 0;
 		Object objectCounter = context.getAttribute("hitCounter");
 		if (objectCounter != null) {
 			counter = Integer.parseInt((String) objectCounter);
 			counter++;
 		}
 		context.setAttribute("hitCounter", String.valueOf(counter));
-		response.setContentType("text/html");
-		// we get the writer
-		PrintWriter out = response.getWriter();
-		out.println("Number of times the get method has been called:" + counter);
-		out.flush();
-		out.close();
+		return counter;
+		
+		
 	}
 
 	/**
