@@ -5,6 +5,8 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebInitParam;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +15,8 @@ import javax.servlet.http.HttpSession;
 /**
  * Servlet implementation class MyServlet
  */
+@WebServlet(name = "MyServlet", urlPatterns = { "/MyServlet" }, initParams = {
+		@WebInitParam(name = "author", value = "TIW") })
 
 public class MyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -35,7 +39,7 @@ public class MyServlet extends HttpServlet {
 		this.config = config;
 		context = config.getServletContext();
 		String authorName = config.getInitParameter("author");
-		System.out.println("author: "+authorName);
+		System.out.println("author: " + authorName);
 
 	}
 
@@ -45,12 +49,12 @@ public class MyServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+
 		int counter = 1;
-		// counter = hitCounter(response);	
-		counter = sessionHitCounter(request);
-		 
-		// we get the writer		
+		counter = hitCounter(response);
+		//counter = sessionHitCounter(request);
+
+		// we get the writer
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		out.println("Number of times the get method has been called:" + counter);
@@ -67,10 +71,10 @@ public class MyServlet extends HttpServlet {
 			System.out.println((String) mySession.getAttribute("counter"));
 		}
 		int scount = 0;
-		try{
-		 scount = Integer.parseInt((String) (mySession.getAttribute("counter")));
-		} catch (NumberFormatException e){
-			
+		try {
+			scount = Integer.parseInt((String) (mySession.getAttribute("counter")));
+		} catch (NumberFormatException e) {
+
 		}
 		scount++;
 		mySession.setAttribute("counter", String.valueOf(scount));
@@ -86,8 +90,7 @@ public class MyServlet extends HttpServlet {
 		}
 		context.setAttribute("hitCounter", String.valueOf(counter));
 		return counter;
-		
-		
+
 	}
 
 	/**
