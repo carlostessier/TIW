@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 public class MyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private ServletConfig config;
+	private ServletContext context;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -30,6 +31,7 @@ public class MyServlet extends HttpServlet {
 	 */
 	public void init(ServletConfig config) throws ServletException {
 		this.config = config;
+		context = config.getServletContext();
 
 	}
 
@@ -40,6 +42,23 @@ public class MyServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		hitCounter(response);
+	}
+
+	private void hitCounter(HttpServletResponse response) throws IOException {
+		int counter = 1;
+		Object objectCounter = context.getAttribute("hitCounter");
+		if (objectCounter != null) {
+			counter = Integer.parseInt((String) objectCounter);
+			counter++;
+		}
+		context.setAttribute("hitCounter", String.valueOf(counter));
+		response.setContentType("text/html");
+		// we get the writer
+		PrintWriter out = response.getWriter();
+		out.println("Number of times the get method has been called:" + counter);
+		out.flush();
+		out.close();
 	}
 
 	/**
@@ -49,10 +68,9 @@ public class MyServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		ServletContext context = config.getServletContext();
 		String sRedirect = (String) request.getParameter("Forward");
-		
-		if (sRedirect!=null && sRedirect.compareTo("y") == 0) {			 
+
+		if (sRedirect != null && sRedirect.compareTo("y") == 0) {
 			RequestDispatcher reqDis = context.getRequestDispatcher("/otherPage.html");
 			reqDis.forward(request, response);
 		} else {
